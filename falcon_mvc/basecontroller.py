@@ -24,8 +24,6 @@
 #
 #
 
-import falcon
-
 # the base controller other controllers are derived from
 class basecontroller:
    # accept an opaque data object that we don't inspect
