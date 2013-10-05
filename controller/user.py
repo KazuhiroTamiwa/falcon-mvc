@@ -1,5 +1,3 @@
-import os
-import sys
 import falcon
 
 import falcon_mvc.basecontroller as basecontroller
@@ -36,7 +34,7 @@ class controller(basecontroller.basecontroller):
       except Exception, e:
          print 'get exception: %s' % str(e)
 
-      print 'post: %s' % user
+      print 'post: %s => %s' % (user, str(raw_json))
       resp.status = falcon.HTTP_200
       resp.body = 'post body'
 
