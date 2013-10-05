@@ -30,6 +30,7 @@ example controller
 ==================
 The following example lives in controller/test.py:
 
+```python
 import falcon
 import falcon_mvc.basecontroller as basecontroller
 
@@ -41,7 +42,7 @@ class controller(basecontroller.basecontroller):
       print 'get'
       resp.status = falcon.HTTP_200
       resp.body = 'get body'
-
+```
 
 Here, we define a new controller derived from basecontroller.  It defines the route
 it will handle in falcon as '/test'.  It then implements a basic GET handler for that
