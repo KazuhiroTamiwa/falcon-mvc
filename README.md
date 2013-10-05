@@ -11,6 +11,7 @@ any controller found in the controller directory.  It then defines a route in fa
 for each loaded controller.  It then gets out of the way and the rest of the app acts
 as a normal falcon app.
 
+The falcon framework can be found at https://github.com/racker/falcon.
 
 controllers
 ===========
