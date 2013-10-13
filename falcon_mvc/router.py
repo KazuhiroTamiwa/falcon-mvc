@@ -27,7 +27,7 @@
 import os
 import sys
 import imp
-import glob
+import fnmatch
 
 import falcon
 
@@ -45,21 +45,26 @@ class router():
    # and load the modules adding routes to falcon
    def load(self, data=False):
       scriptPath = os.path.realpath(os.path.dirname(sys.argv[0]))
-      controllerDir = scriptPath + '/controller/*.py'
+      controllerDir = scriptPath + '/controller'
 
       # get a file listing
-      fl = glob.glob(controllerDir)
-      for i in range(len(fl)):
-          # split the path to the controller apart
-          filename = fl[i]
-          modpath = fl[i].split('/')
-          fl[i] = modpath[len(modpath)  - 1]
-          if fl[i] != '__init__.py': # don't try to load the __init__.py file
-             # remove the '.py' from the end of the filename
-             fl[i] = fl[i][0:(len(fl[i])-3)]
+      matches = []
+      for root, dirnames, filenames in os.walk(controllerDir):
+         for filename in fnmatch.filter(filenames, '*.py'):
+            matches.append(os.path.join(root, filename))
 
-             worker = fl[i]
-             workerDir = scriptPath + '/controller'
+      for i in range(len(matches)):
+          # split the path to the controller apart
+          filename = matches[i]
+          modpath = matches[i].split('/')
+          matches[i] = modpath[len(modpath)  - 1]
+          if matches[i] != '__init__.py': # don't try to load the __init__.py file
+             workerDir = filename.replace('/' + matches[i], '')
+
+             # remove the '.py' from the end of the filename
+             matches[i] = matches[i][0:(len(matches[i])-3)]
+
+             worker = matches[i]
              f, filename, desc = imp.find_module(worker, [workerDir])
 
              # actually load the controller
@@ -71,10 +76,15 @@ class router():
 
              # call a localized version of __init__()
              c.__local__()
-             print 'loading route: %s' % c.routePath
+             print 'loading route: %s' % str(c.routePath)
 
              # add the route to falcon
-             self.api.add_route(c.routePath, c)
+             if type(c.routePath) == str:
+                self.api.add_route(c.routePath, c)
+             else:
+                for r in c.routePath:
+                   self.api.add_route(r, c)
+             print "\n"
 
    def listen(self):
       httpd = simple_server.make_server('0.0.0.0', 8080, self.app)
